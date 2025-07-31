@@ -136,7 +136,8 @@
             </video>
             <div class="text-2xl font-bold">AIR Lab</div>
         </div>
-        <ul class="flex space-x-4 items-center">
+        <!-- Desktop Navigation -->
+        <ul class="md:flex hidden space-x-4 items-center">
             <li>
                 <a href="#" class="nav-item px-4 py-2 rounded-lg active-nav" data-section="welcome">Welcome</a>
             </li>
@@ -171,6 +172,20 @@
                 <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="contact">Contact</a>
             </li>
         </ul>
+        <!-- Mobile Dropdown -->
+        <select id="mobile-nav" class="md:hidden bg-white text-blue-900 rounded-lg p-2 w-full mt-2" onchange="navigateToSection(this.value)">
+            <option value="welcome">Welcome</option>
+            <option value="pi">PI</option>
+            <option value="teams">Teams</option>
+            <option value="publications">Publications</option>
+            <option value="patents">Patents</option>
+            <option value="projects">Projects</option>
+            <option value="gallery">Gallery</option>
+            <option value="news">News</option>
+            <option value="acknowledgements">Acknowledgements</option>
+            <option value="positions">Positions</option>
+            <option value="contact">Contact</option>
+        </select>
     </nav>
 
     <!-- Main Content Area -->
@@ -540,11 +555,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             const navItems = document.querySelectorAll('.nav-item');
             const sections = document.querySelectorAll('.section-content');
+            const mobileNav = document.getElementById('mobile-nav');
 
             // Show Welcome section by default
             document.getElementById('welcome').classList.remove('hidden');
+            mobileNav.value = 'welcome'; // Set default dropdown value
 
-            // Handle main navigation clicks
+            // Handle desktop navigation clicks
             navItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -560,10 +577,32 @@
                     navItems.forEach(nav => nav.classList.remove('active-nav'));
                     item.classList.add('active-nav');
 
+                    // Update mobile dropdown
+                    mobileNav.value = sectionId;
+
                     // Scroll to top to ensure content is visible under fixed navbar
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             });
+
+            // Handle mobile dropdown navigation
+            window.navigateToSection = function(sectionId) {
+                // Hide all sections
+                sections.forEach(section => section.classList.add('hidden'));
+
+                // Show selected section
+                document.getElementById(sectionId).classList.remove('hidden');
+
+                // Update active nav item for desktop consistency
+                navItems.forEach(nav => nav.classList.remove('active-nav'));
+                const activeItem = Array.from(navItems).find(nav => nav.getAttribute('data-section') === sectionId);
+                if (activeItem) {
+                    activeItem.classList.add('active-nav');
+                }
+
+                // Scroll to top to ensure content is visible under fixed navbar
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
         });
     </script>
 </body>
