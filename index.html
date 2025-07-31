@@ -1,0 +1,442 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIR Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'air-blue': '#2563EB',
+                        'air-accent': '#10B981',
+                        'air-dark': '#1E293B',
+                        'air-glow': '#BAE6FD',
+                        'air-light': '#F1F5F9',
+                    },
+                    fontFamily: {
+                        'exo': ['Exo 2', 'sans-serif'],
+                        'source-code': ['Source Code Pro', 'monospace'],
+                    },
+                    animation: {
+                        'slide-in': 'slide-in 0.5s ease-out',
+                        'glow-pulse': 'glow-pulse 3s ease-in-out infinite',
+                        'float': 'float 2s ease-in-out infinite',
+                        'touch-glow': 'touch-glow 0.3s ease',
+                    },
+                    keyframes: {
+                        'slide-in': {
+                            '0%': { transform: 'translateX(20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        'glow-pulse': {
+                            '0%, 100%': { boxShadow: '0 0 5px rgba(16, 185, 129, 0.3)' },
+                            '50%': { boxShadow: '0 0 15px rgba(16, 185, 129, 0.7)' },
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        },
+                        'touch-glow': {
+                            '0%': { transform: 'scale(1)', boxShadow: 'none' },
+                            '100%': { transform: 'scale(1.02)', boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #F1F5F9 0%, #DBEAFE 100%);
+            background-attachment: fixed;
+        }
+        .section h2, .section h3, .section h4 {
+            margin-bottom: 2rem;
+        }
+        .content-container {
+            margin-left: 12rem;
+        }
+        .pi-container {
+            display: flex;
+            gap: 2rem;
+        }
+        .pi-image {
+            width: 10rem;
+            height: 10rem;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #10B981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        .nav-link:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease;
+        }
+        .contact-item:hover {
+            animation: float 2s ease-in-out infinite;
+        }
+        .pub-item:hover {
+            animation: touch-glow 0.3s ease forwards;
+        }
+    </style>
+</head>
+<body class="font-source-code text-gray-800">
+    <!-- Header -->
+    <header class="bg-air-dark text-air-glow py-8 shadow-lg">
+        <div class="container mx-auto px-4 flex items-center justify-center gap-4">
+            <img src="path_to_air_lab_logo.png" alt="AIR Lab Logo" class="w-16 h-16 object-contain">
+            <h1 class="text-6xl font-exo font-extrabold">AIR Lab</h1>
+        </div>
+        <p class="text-center text-xl text-air-accent mt-2">Precision Livestock Farming with AI & Robotics</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-air-blue text-air-glow py-4 sticky top-0 z-10 shadow-md">
+        <div class="container mx-auto px-4">
+            <ul class="flex flex-wrap justify-center gap-4">
+                <li><button onclick="showSection('welcome')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Welcome</button></li>
+                <li><button onclick="showSection('pi')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">PI</button></li>
+                <li><button onclick="showSection('teams')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Teams</button></li>
+                <li><button onclick="showSection('publications')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Publications</button></li>
+                <li><button onclick="showSection('patents')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Patents</button></li>
+                <li><button onclick="showSection('projects')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Projects</button></li>
+                <li><button onclick="showSection('gallery')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Gallery</button></li>
+                <li><button onclick="showSection('news')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">News</button></li>
+                <li><button onclick="showSection('acknowledgements')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Acknowledgements</button></li>
+                <li><button onclick="showSection('positions')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Positions</button></li>
+                <li><button onclick="showSection('contact')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Contact</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 content-container">
+        <!-- Welcome Section -->
+        <section id="welcome" class="section active">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Welcome to the AIR Lab</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
+                <img src="path_to_air_lab_image.jpg" alt="AIR Lab" class="w-full h-72 object-cover rounded mb-8">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="md:w-1/2">
+                        <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Our Research Interests:</h3>
+                        <ul class="list-disc pl-6 text-lg mb-12">
+                            <li>Artificial intelligence (AI) and predictive analytics</li>
+                            <li>Robotics, unmanned ground (UGV), and aerial (UAV) vehicle automation</li>
+                            <li>Computer vision, sensors, and IoT technologies</li>
+                            <li>Big data analysis and hyperspectral imaging</li>
+                            <li>Animal behavior, welfare, food safety, and sustainability</li>
+                            <li>Air quality, greenhouse gas emissions, and disease prevention</li>
+                        </ul>
+                        <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">What We Work On:</h3>
+                        <ul class="list-disc pl-6 text-lg mb-12">
+                            <li>Predicting and controlling livestock diseases like Avian Influenza</li>
+                            <li>Health monitoring for poultry, cattle, and swine</li>
+                            <li>Building affordable unmanned ground and aerial vehicles</li>
+                            <li>Mobile apps for real-time animal health and behavior monitoring</li>
+                            <li>Machine learning models for precision feeding, breeding, and embryo sexing</li>
+                            <li>New methods for rapid, non-destructive food quality testing</li>
+                        </ul>
+                    </div>
+                    <div class="md:w-1/2 flex items-center">
+                        <img src="path_to_research_goal_image.jpg" alt="AIR Lab Research Goal" class="w-full h-96 object-cover rounded">
+                    </div>
+                </div>
+                <p class="text-lg mb-6">Department of Biological and Agricultural Engineering<br>College of Agriculture and Life Sciences, North Carolina State University</p>
+                <p class="text-lg">At the AIR Lab, we harness AI, robotics, and cutting-edge technologies to revolutionize precision livestock farming and sustainable agriculture. Our mission is to enhance animal health, welfare, food quality, and environmental sustainability through machine learning, automation, and data-driven solutions.</p>
+                <p class="mt-6 text-xl font-exo font-semibold text-air-accent">Join us in shaping the future of livestock farming with technology!</p>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- PI Section -->
+        <section id="pi" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Principal Investigator (PI)</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse pi-container">
+                <img src="path_to_personal_image.jpg" alt="Ramesh Bahadur Bist" class="pi-image">
+                <div>
+                    <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Ramesh Bahadur Bist, Ph.D.</h3>
+                    <p class="text-lg mb-2">Assistant Professor of Artificial Intelligence for Integrated Food and Animal Systems</p>
+                    <p class="text-lg mb-2">Department of Biological and Agricultural Engineering, College of Agriculture and Life Sciences</p>
+                    <p class="text-lg mb-2">Email: <a href="mailto:rameshba.bist@gmail.com" class="text-air-accent hover:underline">rameshba.bist@gmail.com</a></p>
+                    <p class="text-lg mb-6">Office: 000-00-0000</p>
+                    <p class="text-lg mb-6">Dr. Ramesh Bahadur Bist earned his Ph.D. in Poultry Science from the University of Georgia in 2024 under Dr. Lilong Chai. His doctoral research focused on AI and computer vision for detecting, classifying, and segmenting poultry health, behavior, and welfare conditions. He also pioneered the use of a robotic dog for detecting hen mortality and floor eggs.</p>
+                    <p class="text-lg mb-6">Post-Ph.D., Dr. Bist joined the University of Arkansas in 2024 as a postdoctoral fellow under Dr. Dongyi Wang, advancing computer vision and robotics. His contributions included auto-labeling models, text-prompt-based behavior detection, and sensor technologies like hyperspectral imaging for detecting meat defects. He developed an autonomous unmanned ground vehicle for poultry processing plants using SLAM.</p>
+                    <p class="text-lg mb-6">At NC State, Dr. Bist leads a robust research program in machine learning, robotics, automation, and sensing technologies for livestock farming. His goals include predicting livestock diseases, monitoring animal health, developing affordable unmanned vehicles, creating real-time health tracking apps, and designing non-destructive food quality tests.</p>
+                    <p class="text-lg mb-12">Dr. Bist has published extensively in journals like <i>Computers and Electronics in Agriculture</i>, <i>Artificial Intelligence in Agriculture</i>, and <i>Poultry Science</i>. He serves as a guest editor for special issues in <i>Applied Sciences</i> and <i>AgriEngineering</i> (MDPI) and reviews for journals including <i>Nature Scientific Reports</i> and <i>Sensors</i>.</p>
+                </div>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- Teams Section -->
+        <section id="teams" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Our Teams</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
+                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Current Members</h3>
+                <p class="text-lg mb-6">Hiring Now...</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+                    <div class="border border-air-accent p-4 rounded hover:bg-air-accent/20 transition">
+                        <h4 class="text-xl font-exo font-semibold text-air-blue">Student Name</h4>
+                        <p class="text-lg">Bio: [Student Bio]</p>
+                        <p class="text-lg">Email: <a href="mailto:student@gmail.com" class="text-air-accent hover:underline">student@gmail.com</a></p>
+                        <p class="text-lg">LinkedIn: <a href="#" class="text-air-accent hover:underline">Profile</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- Publications Section -->
+        <section id="publications" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Publications</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse overflow-y-auto max-h-screen">
+                <p class="text-lg mb-6">View our <a href="#" class="text-air-accent hover:underline">Google Scholar page</a>.</p>
+                
+                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Peer-reviewed Articles</h3>
+                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2025</h4>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[38]. Subedi, S., Bist, R. B., Yang, X., Li, G., & Chai, L. Advanced Deep Learning Methods for Multiple Behavior Classification of Cage-Free Laying Hens. <i>AgriEngineering</i>, 7(2). <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
+                    <li class="pub-item">[37]. Yang, X., Bist, R. B., Subedi, S., Guo, Y., & Chai, L. The Application of Probiotics and Prebiotics in Poultry Production and Impacts on Environment: A Review. <i>Encyclopedia</i> 2025, 5(1). <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
+                    <li class="pub-item">[36]. Yang, X., Zhang, Z., Paneru, B., Lin, J., Bist, R. B., Lu, G., & Chai, L. Monitoring Dead Chickens and Floor Eggs with Robotic Technologies. <i>AgriEngineering</i>, 7(2), 35. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
+                </ul>
+                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2024</h4>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[35]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Advanced Deep Learning Methods for Multiple Behavior Classification of Cage-free Laying Hens. <i>AgriEngineering</i>. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
+                    <li class="pub-item">[34]. Bist, R. B., Yang, X., Subedi, S., Bist, K., Paneru, B., Li, G., & Chai, L. An automatic method for scoring poultry footpad dermatitis with deep learning and thermal imaging. <i>Computers and Electronics in Agriculture</i>. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
+                    <!-- Add remaining 2024 publications -->
+                </ul>
+                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2023</h4>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[18]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Illuminating solutions to reduce mislaid eggs in cage-free layers. <i>AgriEngineering</i>, 5(4), 2170-2183. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
+                    <!-- Add remaining 2023 publications -->
+                </ul>
+                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2022</h4>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[2]. Yang, X., Chai, L., Bist, R. B., Subedi, S., & Wu, Z. A Deep Learning Model for Detecting Cage-Free Hens on the Litter Floor. <i>Animals</i>, 12(15), 1983. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
+                    <li class="pub-item">[1]. Bist, R. B., & Chai, L. Advanced Strategies for Mitigating Particulate Matter Generations in Poultry Houses. <i>Appl. Sci.</i> 2022, 12(22), 11323. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
+                </ul>
+
+                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Preprints</h3>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[4]. Bist, R. B., Chai, L., Weimer, S., Atungulu, H., Pennicott, C., Yang, X., Subedi, S., Pallerla, C., Tian, Y., Wang, D. (2025). Efficient Auto-Labeling of Large-Scale Poultry Datasets (ALPD) Using Semi-Supervised Models, Active Learning, and Prompt-then-Detect Approach. <i>ArXiv</i>. <a href="#" class="text-air-accent hover:underline">Link</a>.</li>
+                    <!-- Add remaining preprints -->
+                </ul>
+
+                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Proceedings</h3>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[10]. Bist, R. B., Paneru, B., Yang, X., & Chai, L. (2024). Machine Learning Model for Detection, Segmentation, and Tracking of Individual Cage-free Laying Hens (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
+                    <!-- Add remaining proceedings -->
+                </ul>
+
+                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Abstracts & Presentations</h3>
+                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2025</h4>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[51]. Bist, R. B., Pallerla, C., Owens, C. M., Wang, D. Detection and classification of woody breast in poultry using backlighting and vision-based systems (Poster Presentation). ASABE 2025, Toronto, Canada.</li>
+                    <!-- Add remaining 2025 abstracts -->
+                </ul>
+                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2024</h4>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[43]. Bist, R. B., Chai, L., Weimer, S., Pennicott, C., Yang, X., Mahmoudi, S., Pallerla, C., Feng, Y., Davar, A., Sohrabipour, P., Subbiah, J., Wang, D. Automatic Labeling of Large-Scale Poultry Image Datasets Using Inductive Semi-Supervised Auto-Labeling Models. (Poster Presentation). Annual Arkansas ASABE Meeting 2024, Fayetteville, AR.</li>
+                    <!-- Add remaining 2024 abstracts -->
+                </ul>
+                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2023</h4>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[27]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Synergistic effect of electrostatic particle ionization and bedding management on particulate matter and ammonia reduction in cage-free hen houses. (Oral presentation), 2023 Poultry Science Association Annual Meeting, Philadelphia, PA, USA.</li>
+                    <!-- Add remaining 2023 abstracts -->
+                </ul>
+                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2022</h4>
+                <ul class="list-disc pl-6 text-lg mb-12">
+                    <li class="pub-item">[9]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Pecking Behavior and Damages Detection Using Machine Vision Technology (Oral Presentation), PSA Annual Meeting, San Antonio, Texas, USA.</li>
+                    <!-- Add remaining 2022 abstracts -->
+                </ul>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- Patents Section -->
+        <section id="patents" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Patents</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
+                <p class="text-lg mb-12">No patents are currently listed. Check back for updates on our innovative technologies in AI and robotics for precision livestock farming.</p>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Projects</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
+                <p class="text-lg mb-12">Videos and detailed descriptions of our projects will be added here.</p>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Gallery</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-12">
+                    <div class="hover:scale-105 transition-transform"><img src="path_to_image.jpg" alt="Husky UGV 2025" class="w-full h-48 object-cover rounded"><p class="text-center mt-2 text-air-blue">Husky UGV 2025</p></div>
+                    <div class="hover:scale-105 transition-transform"><img src="path_to_image.jpg" alt="SLAM Map 2025" class="w-full h-48 object-cover rounded"><p class="text-center mt-2 text-air-blue">SLAM Map 2025</p></div>
+                    <!-- Add remaining gallery items -->
+                </div>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- News Section -->
+        <section id="news" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">News</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
+                <p class="text-lg mb-12">Stay tuned for the latest updates and achievements from the AIR Lab.</p>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- Acknowledgements Section -->
+        <section id="acknowledgements" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Acknowledgements</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
+                <p class="text-lg mb-12">This website showcases research contributions developed during my time at the University of Georgia and the University of Arkansas. We sincerely appreciate the generous support provided by our sponsors.</p>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- Positions Section -->
+        <section id="positions" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Available Positions</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
+                <p class="text-lg mb-6">We seek highly motivated Master's, Ph.D. students, and postdoctoral researchers to join our team starting Fall 2025 to Fall 2028 in the Department of Biological and Agricultural Engineering. Students will conduct research in artificial intelligence, robotics, machine vision, infectious disease modeling, and automation for precision livestock farming. Candidates with strong backgrounds in AI, robotics, computational biology, engineering, or related fields are encouraged to apply. Experience in programming, machine learning, computer vision, or mathematical modeling is preferred. Ph.D. positions are fully funded, including stipend, tuition, health insurance, and travel support. Postdoctoral positions offer a competitive salary plus benefits.</p>
+                <p class="text-lg mb-6">Interested candidates should email <a href="mailto:rameshba.bist@gmail.com" class="text-air-accent hover:underline">rameshba.bist@gmail.com</a> with their CV and research statement.</p>
+                <embed src="path_to_position_post.pdf" type="application/pdf" class="w-full h-96 rounded mb-12">
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section hidden">
+            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Contact</h2>
+            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse text-center">
+                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6 animate-slide-in contact-item">📬 Let's Get In Touch!</h3>
+                <p class="text-lg mb-6 animate-slide-in contact-item">Feel free to reach out if you're interested in collaboration, research, or just want to connect. We’d love to hear from you!</p>
+                <p class="text-xl font-exo font-semibold text-air-blue mb-2 animate-slide-in contact-item">Ramesh Bahadur Bist, Ph.D.</p>
+                <p class="text-lg mb-2 animate-slide-in contact-item">Assistant Professor of Artificial Intelligence for Integrated Food and Animal Systems</p>
+                <p class="text-lg mb-2 animate-slide-in contact-item">Principal Investigator of Artificial Intelligence and Robotics (AIR) Lab</p>
+                <p class="text-lg mb-2 animate-slide-in contact-item">151 Weaver Labs, Department of Biological and Agricultural Engineering</p>
+                <p class="text-lg mb-2 animate-slide-in contact-item">North Carolina State University, Raleigh, NC 27606</p>
+                <p class="text-lg mb-6 animate-slide-in contact-item">Email: <a href="mailto:rameshba.bist@gmail.com" class="text-air-accent hover:underline">rameshba.bist@gmail.com</a></p>
+                <div class="flex justify-center gap-6 animate-slide-in contact-item">
+                    <a href="#" class="text-air-accent hover:underline flex items-center"><img src="path_to_twitter_icon.png" alt="Twitter" class="w-6 h-6 mr-2">Twitter</a>
+                    <a href="#" class="text-air-accent hover:underline flex items-center"><img src="path_to_linkedin_icon.png" alt="LinkedIn" class="w-6 h-6 mr-2">LinkedIn</a>
+                    <a href="#" class="text-air-accent hover:underline flex items-center"><img src="path_to_scholar_icon.png" alt="Google Scholar" class="w-6 h-6 mr-2">Google Scholar</a>
+                    <a href="#" class="text-air-accent hover:underline flex items-center"><img src="path_to_github_icon.png" alt="GitHub" class="w-6 h-6 mr-2">GitHub</a>
+                </div>
+            </div>
+            <div class="text-center mt-12 text-sm text-gray-600">
+                <p>Page built and maintained by Ramesh Bahadur Bist</p>
+                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
+                <p>© 2025 by Ramesh Bahadur Bist</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('bg-air-accent', 'text-air-dark');
+            });
+            document.querySelector(`button[onclick="showSection('${sectionId}')"]`).classList.add('bg-air-accent', 'text-air-dark');
+        }
+
+        // Show Welcome section by default
+        showSection('welcome');
+    </script>
+</body>
+</html>
