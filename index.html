@@ -44,399 +44,527 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIR Lab</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'air-blue': '#2563EB',
-                        'air-accent': '#10B981',
-                        'air-dark': '#1E293B',
-                        'air-glow': '#BAE6FD',
-                        'air-light': '#F1F5F9',
-                    },
-                    fontFamily: {
-                        'exo': ['Exo 2', 'sans-serif'],
-                        'source-code': ['Source Code Pro', 'monospace'],
-                    },
-                    animation: {
-                        'slide-in': 'slide-in 0.5s ease-out',
-                        'glow-pulse': 'glow-pulse 3s ease-in-out infinite',
-                        'float': 'float 2s ease-in-out infinite',
-                        'touch-glow': 'touch-glow 0.3s ease',
-                    },
-                    keyframes: {
-                        'slide-in': {
-                            '0%': { transform: 'translateX(20px)', opacity: '0' },
-                            '100%': { transform: 'translateX(0)', opacity: '1' },
-                        },
-                        'glow-pulse': {
-                            '0%, 100%': { boxShadow: '0 0 5px rgba(16, 185, 129, 0.3)' },
-                            '50%': { boxShadow: '0 0 15px rgba(16, 185, 129, 0.7)' },
-                        },
-                        'float': {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-5px)' },
-                        },
-                        'touch-glow': {
-                            '0%': { transform: 'scale(1)', boxShadow: 'none' },
-                            '100%': { transform: 'scale(1.02)', boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)' },
-                        },
-                    },
-                },
-            },
-        }
-    </script>
     <style>
         body {
-            background: linear-gradient(135deg, #F1F5F9 0%, #DBEAFE 100%);
-            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
         }
-        .section h2, .section h3, .section h4 {
-            margin-bottom: 2rem;
+        .navbar {
+            background: linear-gradient(to right, #1e3a8a, #3b82f6);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
         }
-        .content-container {
-            margin-left: 12rem;
+        .section-content {
+            max-width: 1000px; /* Expanded for more content */
+            margin: 0 auto;
+            padding-top: 120px; /* Space for fixed navbar */
         }
-        .pi-container {
-            display: flex;
-            gap: 2rem;
+        .nav-item:hover {
+            background-color: #2563eb;
         }
-        .pi-image {
-            width: 10rem;
-            height: 10rem;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #10B981;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        .active-nav {
+            background-color: #2563eb;
+            color: white;
+            text-decoration: underline;
+            text-underline-offset: 4px;
         }
-        .nav-link:hover {
+        .underline-heading {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+        .student-card:hover {
             transform: scale(1.05);
-            transition: transform 0.2s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        .contact-item:hover {
-            animation: float 2s ease-in-out infinite;
+        .video-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        .pub-item:hover {
-            animation: touch-glow 0.3s ease forwards;
+        .news-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .pdf-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .pop-text {
+            animation: pop 2s infinite;
+        }
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+            .navbar ul {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+            }
+            .nav-item {
+                width: 100%;
+                text-align: center;
+            }
+            .section-content {
+                padding-top: 200px; /* Adjust for taller navbar on mobile */
+            }
+            .contact-item {
+                font-size: 0.95rem; /* Smaller font on mobile for single-line fit */
+            }
         }
     </style>
 </head>
-<body class="font-source-code text-gray-800">
-    <!-- Header -->
-    <header class="bg-air-dark text-air-glow py-8 shadow-lg">
-        <div class="container mx-auto px-4 flex items-center justify-center gap-4">
-            <img src="path_to_air_lab_logo.png" alt="AIR Lab Logo" class="w-16 h-16 object-contain">
-            <h1 class="text-6xl font-exo font-extrabold">AIR Lab</h1>
+<body class="bg-gray-100">
+    <!-- Top Navigation Bar -->
+    <nav class="navbar text-white p-4 flex items-center justify-between shadow-md">
+        <div class="flex items-center space-x-4">
+            <video controls class="w-24 h-16 rounded-lg" autoplay muted>
+                <source src="path_to_video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="text-2xl font-bold">AIR Lab</div>
         </div>
-        <p class="text-center text-xl text-air-accent mt-2">Precision Livestock Farming with AI & Robotics</p>
-    </header>
-
-    <!-- Navigation -->
-    <nav class="bg-air-blue text-air-glow py-4 sticky top-0 z-10 shadow-md">
-        <div class="container mx-auto px-4">
-            <ul class="flex flex-wrap justify-center gap-4">
-                <li><button onclick="showSection('welcome')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Welcome</button></li>
-                <li><button onclick="showSection('pi')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">PI</button></li>
-                <li><button onclick="showSection('teams')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Teams</button></li>
-                <li><button onclick="showSection('publications')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Publications</button></li>
-                <li><button onclick="showSection('patents')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Patents</button></li>
-                <li><button onclick="showSection('projects')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Projects</button></li>
-                <li><button onclick="showSection('gallery')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Gallery</button></li>
-                <li><button onclick="showSection('news')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">News</button></li>
-                <li><button onclick="showSection('acknowledgements')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Acknowledgements</button></li>
-                <li><button onclick="showSection('positions')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Positions</button></li>
-                <li><button onclick="showSection('contact')" class="nav-link px-4 py-2 bg-air-dark hover:bg-air-accent hover:text-air-dark rounded font-exo text-lg">Contact</button></li>
-            </ul>
-        </div>
+        <ul class="flex space-x-4 items-center">
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg active-nav" data-section="welcome">Welcome</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="pi">PI</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="teams">Teams</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="publications">Publications</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="patents">Patents</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="projects">Projects</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="gallery">Gallery</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="news">News</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="acknowledgements">Acknowledgements</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="positions">Positions</a>
+            </li>
+            <li>
+                <a href="#" class="nav-item px-4 py-2 rounded-lg" data-section="contact">Contact</a>
+            </li>
+        </ul>
     </nav>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 content-container">
+    <!-- Main Content Area -->
+    <div class="p-8">
         <!-- Welcome Section -->
-        <section id="welcome" class="section active">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Welcome to the AIR Lab</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
-                <img src="path_to_air_lab_image.jpg" alt="AIR Lab" class="w-full h-72 object-cover rounded mb-8">
-                <div class="flex flex-col md:flex-row gap-8">
-                    <div class="md:w-1/2">
-                        <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Our Research Interests:</h3>
-                        <ul class="list-disc pl-6 text-lg mb-12">
-                            <li>Artificial intelligence (AI) and predictive analytics</li>
-                            <li>Robotics, unmanned ground (UGV), and aerial (UAV) vehicle automation</li>
-                            <li>Computer vision, sensors, and IoT technologies</li>
-                            <li>Big data analysis and hyperspectral imaging</li>
-                            <li>Animal behavior, welfare, food safety, and sustainability</li>
-                            <li>Air quality, greenhouse gas emissions, and disease prevention</li>
-                        </ul>
-                        <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">What We Work On:</h3>
-                        <ul class="list-disc pl-6 text-lg mb-12">
-                            <li>Predicting and controlling livestock diseases like Avian Influenza</li>
-                            <li>Health monitoring for poultry, cattle, and swine</li>
-                            <li>Building affordable unmanned ground and aerial vehicles</li>
-                            <li>Mobile apps for real-time animal health and behavior monitoring</li>
-                            <li>Machine learning models for precision feeding, breeding, and embryo sexing</li>
-                            <li>New methods for rapid, non-destructive food quality testing</li>
-                        </ul>
-                    </div>
-                    <div class="md:w-1/2 flex items-center">
-                        <img src="path_to_research_goal_image.jpg" alt="AIR Lab Research Goal" class="w-full h-96 object-cover rounded">
-                    </div>
+        <div id="welcome" class="section-content">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Welcome to the AIR Lab</h1>
+            <video controls class="w-full mb-4 rounded-lg shadow-md">
+                <source src="path_to_video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="text-lg text-gray-700 mb-2">Department of Biological and Agricultural Engineering</p>
+            <p class="text-lg text-gray-700 mb-4">College of Agriculture and Life Sciences, North Carolina State University</p>
+            <p class="text-gray-600 mb-4">At the AIR Lab, we use AI, robotics, and innovative technologies to drive innovation in precision livestock farming and sustainable agriculture. We combine machine learning, automation, sensing technologies, and data-driven solutions to improve animal health, welfare, food quality, and environmental outcomes.</p>
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <div class="md:w-1/2 flex flex-col justify-center">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-2">Our Research Interests:</h2>
+                    <ul class="list-disc pl-5 text-gray-600 mb-4">
+                        <li>AI and predictive analytics</li>
+                        <li>Robotics, UGV, and UAV automation</li>
+                        <li>Computer vision, sensors, and IoT</li>
+                        <li>Big data and hyperspectral imaging</li>
+                        <li>Animal behavior, welfare, and sustainability</li>
+                        <li>Air quality and disease prevention</li>
+                    </ul>
+                    <h2 class="text-xl font-semibold text-blue-800 mb-2">What We Work On:</h2>
+                    <ul class="list-disc pl-5 text-gray-600 mb-4">
+                        <li>Controlling livestock diseases like Avian Influenza</li>
+                        <li>Health monitoring for poultry, cattle, and swine</li>
+                        <li>Affordable unmanned vehicles</li>
+                        <li>Mobile apps for real-time monitoring</li>
+                        <li>ML for precision feeding and breeding</li>
+                        <li>Rapid, non-destructive food quality testing</li>
+                    </ul>
                 </div>
-                <p class="text-lg mb-6">Department of Biological and Agricultural Engineering<br>College of Agriculture and Life Sciences, North Carolina State University</p>
-                <p class="text-lg">At the AIR Lab, we harness AI, robotics, and cutting-edge technologies to revolutionize precision livestock farming and sustainable agriculture. Our mission is to enhance animal health, welfare, food quality, and environmental sustainability through machine learning, automation, and data-driven solutions.</p>
-                <p class="mt-6 text-xl font-exo font-semibold text-air-accent">Join us in shaping the future of livestock farming with technology!</p>
+                <div class="md:w-1/2 flex items-center">
+                    <img src="path_to_image.jpg" alt="AIR Lab Research Goal" class="w-full rounded-lg shadow-md">
+                </div>
             </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
+            <p class="text-gray-600 mb-4">We are excited to lead innovation at the intersection of livestock, technology, and sustainability. Thank you for visiting and welcome to the AIR Lab!</p>
+        </div>
 
         <!-- PI Section -->
-        <section id="pi" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Principal Investigator (PI)</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse pi-container">
-                <img src="path_to_personal_image.jpg" alt="Ramesh Bahadur Bist" class="pi-image">
-                <div>
-                    <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Ramesh Bahadur Bist, Ph.D.</h3>
-                    <p class="text-lg mb-2">Assistant Professor of Artificial Intelligence for Integrated Food and Animal Systems</p>
-                    <p class="text-lg mb-2">Department of Biological and Agricultural Engineering, College of Agriculture and Life Sciences</p>
-                    <p class="text-lg mb-2">Email: <a href="mailto:rameshba.bist@gmail.com" class="text-air-accent hover:underline">rameshba.bist@gmail.com</a></p>
-                    <p class="text-lg mb-6">Office: 000-00-0000</p>
-                    <p class="text-lg mb-6">Dr. Ramesh Bahadur Bist earned his Ph.D. in Poultry Science from the University of Georgia in 2024 under Dr. Lilong Chai. His doctoral research focused on AI and computer vision for detecting, classifying, and segmenting poultry health, behavior, and welfare conditions. He also pioneered the use of a robotic dog for detecting hen mortality and floor eggs.</p>
-                    <p class="text-lg mb-6">Post-Ph.D., Dr. Bist joined the University of Arkansas in 2024 as a postdoctoral fellow under Dr. Dongyi Wang, advancing computer vision and robotics. His contributions included auto-labeling models, text-prompt-based behavior detection, and sensor technologies like hyperspectral imaging for detecting meat defects. He developed an autonomous unmanned ground vehicle for poultry processing plants using SLAM.</p>
-                    <p class="text-lg mb-6">At NC State, Dr. Bist leads a robust research program in machine learning, robotics, automation, and sensing technologies for livestock farming. His goals include predicting livestock diseases, monitoring animal health, developing affordable unmanned vehicles, creating real-time health tracking apps, and designing non-destructive food quality tests.</p>
-                    <p class="text-lg mb-12">Dr. Bist has published extensively in journals like <i>Computers and Electronics in Agriculture</i>, <i>Artificial Intelligence in Agriculture</i>, and <i>Poultry Science</i>. He serves as a guest editor for special issues in <i>Applied Sciences</i> and <i>AgriEngineering</i> (MDPI) and reviews for journals including <i>Nature Scientific Reports</i> and <i>Sensors</i>.</p>
+        <div id="pi" class="section-content hidden">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Principal Investigator (PI)</h1>
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="md:w-1/3">
+                    <img src="path_to_pi_image.jpg" alt="Ramesh Bahadur Bist" class="w-full rounded-lg shadow-md">
+                </div>
+                <div class="md:w-2/3 bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-semibold text-blue-800">Ramesh Bahadur Bist, Ph.D.</h2>
+                    <p class="text-lg text-gray-700">Assistant Professor of Artificial Intelligence for Integrated Food and Animal Systems</p>
+                    <p class="text-gray-600 mb-2">Department of Biological and Agricultural Engineering, College of Agriculture and Life Sciences</p>
+                    <p class="text-gray-600 mb-2">Email: <a href="mailto:rameshba.bist@gmail.com" class="text-blue-600 hover:underline">rameshba.bist@gmail.com</a></p>
+                    <p class="text-gray-600 mb-4">Office: 000-00-0000</p>
+                    <p class="text-gray-600 mb-2">Dr. Ramesh Bahadur Bist received his Ph.D. in Poultry Science from the University of Georgia in 2024 under the supervision of Dr. Lilong Chai. During his Ph.D., he worked extensively with AI tools and computer vision to detect, classify, and segment animal health, behavior, and welfare conditions in poultry. He also used a robotic dog to detect mortality in hens and locate floor eggs.</p>
+                    <p class="text-gray-600 mb-2">After his Ph.D., Dr. Bist joined the University of Arkansas in 2024 as a postdoctoral fellow, working on computer vision and robotics with Dr. Dongyi Wang. His work included developing auto-labeling and text-prompt-based behavior detection models, and applying hyperspectral and thermal sensors to detect meat defects and foreign materials. He contributed to an unmanned ground vehicle for autonomous navigation in poultry plants using SLAM.</p>
+                    <p class="text-gray-600 mb-2">At NC State, Dr. Bist leads a research program focused on machine learning, robotics, automation, and sensing for livestock farming. His goals include predicting livestock diseases, monitoring animal health, building affordable vehicles, creating mobile apps, and designing non-destructive food quality tests.</p>
+                    <p class="text-gray-600">He has published in journals like Computers and Electronics in Agriculture, Poultry Science, and Journal of Environmental Management. Dr. Bist serves as a guest editor for special issues in Applied Sciences and AgriEngineering (MDPI) and reviews for journals including Nature Scientific Reports and Sensors.</p>
                 </div>
             </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
+        </div>
 
         <!-- Teams Section -->
-        <section id="teams" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Our Teams</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
-                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Current Members</h3>
-                <p class="text-lg mb-6">Hiring Now...</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-                    <div class="border border-air-accent p-4 rounded hover:bg-air-accent/20 transition">
-                        <h4 class="text-xl font-exo font-semibold text-air-blue">Student Name</h4>
-                        <p class="text-lg">Bio: [Student Bio]</p>
-                        <p class="text-lg">Email: <a href="mailto:student@gmail.com" class="text-air-accent hover:underline">student@gmail.com</a></p>
-                        <p class="text-lg">LinkedIn: <a href="#" class="text-air-accent hover:underline">Profile</a></p>
+        <div id="teams" class="section-content hidden">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Our Teams</h1>
+            <h2 class="text-2xl font-semibold text-blue-800 mb-4">Current Members</h2>
+            <p class="text-gray-600 mb-4">Hiring Now...</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="student-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold text-blue-800">John Doe</h3>
+                    <p class="text-gray-600 mb-2">Bio: John is a Ph.D. student specializing in computer vision for poultry behavior analysis. He has a background in machine learning and robotics.</p>
+                    <p class="text-gray-600 mb-2">Email: <a href="mailto:johndoe@gmail.com" class="text-blue-600 hover:underline">johndoe@gmail.com</a></p>
+                    <p class="text-gray-600">LinkedIn: <a href="#" class="text-blue-600 hover:underline">Profile</a></p>
+                </div>
+                <div class="student-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold text-blue-800">Jane Smith</h3>
+                    <p class="text-gray-600 mb-2">Bio: Jane is a Master's student focusing on IoT and sensor technologies for livestock monitoring. She is skilled in data analysis and embedded systems.</p>
+                    <p class="text-gray-600 mb-2">Email: <a href="mailto:janesmith@gmail.com" class="text-blue-600 hover:underline">janesmith@gmail.com</a></p>
+                    <p class="text-gray-600">LinkedIn: <a href="#" class="text-blue-600 hover:underline">Profile</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Publications Section -->
+        <div id="publications" class="section-content hidden">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Publications</h1>
+            <p class="text-gray-600 mb-4">View our <a href="#" class="text-blue-600 hover:underline">Google Scholar page</a>.</p>
+            <h2 class="text-2xl font-semibold text-blue-800 mb-2 underline-heading">Peer-reviewed Articles</h2>
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">2025</h3>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[38]. Subedi, S., Bist, R. B., Yang, X., Li, G., & Chai, L. Advanced Deep Learning Methods for Multiple Behavior Classification of Cage-Free Laying Hens. AgriEngineering, 7(2). <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[37]. Yang, X., Bist, R. B., Subedi, S., Guo, Y., & Chai, L. The Application of Probiotics and Prebiotics in Poultry Production and Impacts on Environment: A Review. Encyclopedia 2025, 5(1). <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[36]. Yang, X., Zhang, Z., Paneru, B., Lin, J., Bist, R. B., Lu, G., & Chai, L. Monitoring Dead Chickens and Floor Eggs with Robotic Technologies. AgriEngineering, 7(2), 35. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+            </ul>
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">2024</h3>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[35]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Advanced Deep Learning Methods for Multiple Behavior Classification of Cage-free Laying Hens. AgriEngineering. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[34]. Bist, R. B., Yang, X., Subedi, S., Bist, K., Paneru, B., Li, G., & Chai, L. An automatic method for scoring poultry footpad dermatitis with deep learning and thermal imaging. Computers and Electronics in Agriculture. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[33]. Pallerla, C., Feng, Y., Owens, C. M., Bist, R. B., Mahmoudi, S., Sohrabipour, P., Davar, A., & Wang, D. Neural Network Architecture Search Enabled Wide-Deep Learning (NAS-WD) for Spatially Heterogenous Property Awarded Chicken Woody Breast Classification and Hardness Regression. Artificial Intelligence in Agriculture. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[32]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. A Machine Vision System for Monitoring Wild Birds on Poultry Farms for Preventing Avian Influenza. AgriEngineering. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[31]. Mahmoudi, S., Davar, A., Sohrabipour, P., Bist, R. B., Tao, Y., & Wang, D. Leveraging Imitation Learning in Agricultural Robotics: A Comprehensive Survey and Comparative Analysis. Frontiers in Robotics and AI. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[30]. Saeidifar, S., Li, G., Chai, L., Bist, R. B., Rasheed, K. M., Lu, J., Banakar, A., & Liu, T. Zero-Shot Image Segmentation for Monitoring Thermal Conditions of Individual Cage-Free Laying Hens. Computers and Electronics in Agriculture. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[29]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Automatic Detection of Cage-free Hens Bumblefoot with Computer Vision Technologies. Poultry Science. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[28]. Bist, R. B., Bist, K., Poudel, S., Subedi, D., Yang, X., Paneru, P., Mani, S., Wang, D., & Chai, L. Sustainable Poultry Farming Practices: A Critical Review of Current Strategies and Future Prospects. Poultry Science. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[27]. Bist, R. B., Subedi, S., Chai, L., Ritz, C. W., Kim, W. K., & Yang, X. Electrostatic Particle Ionization for Suppressing Air Pollutants in Cage-Free Layer Facilities: Dust Suppressing for Cage-Free Hens. Poultry Science. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[26]. Bist, R. B., Yang, X., Subedi, S., & Chai, L. An Integrated Engineering Method for Improving Air Quality in Cage-Free Hen Houses. AgriEngineering. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[25]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Enhancing Dust Control for Cage-Free Hens with Electrostatic Particle Charging Systems at Varying Installation Heights and Operation Durations. AgriEngineering. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[24]. Yang, X., Bist, R. B., Paneru, B., Liu, T., Applegate, T., Ritz, C., Kim, W., & Regmi, P. Computer Vision-Based Cybernetics Systems for Promoting Modern Poultry Farming: A Critical Review. Computers and Electronics in Agriculture. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[23]. Yang, X., Bist, R. B., Paneru, B., & Chai, L. Monitoring Activity Index and Behaviors of Cage-Free Hens with Advanced Deep Learning Technologies. Poultry Science. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[22]. Yang, X., Haixing, D., Zihao, W., Bist, R. B., Subedi, S., Guoyu, L., Changying, L., Tianming, L., & Chai, L. An Innovative Segment Anything Model for Precision Poultry Monitoring. Computers and Electronics in Agriculture. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[21]. Yang, X., Bist, R. B., Paneru, B., & Chai, L. Deep Learning Methods for Tracking the Locomotion of Individual Chickens. Animal MDPI. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[20]. Paneru, B., Bist, R. B., Chai, L., & Yang, X. Tracking Perching Behavior of Cage-Free Laying Hens with Deep Learning Technologies. Poultry Science. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[19]. Paneru, B., Bist, R. B., Chai, L., & Yang, X. Tracking Dustbathing Behavior of Cage-Free Laying Hen with Machine Vision Technologies. Poultry Science. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+            </ul>
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">2023</h3>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[18]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Illuminating solutions to reduce mislaid eggs in cage-free layers. AgriEngineering, 5(4), 2170-2183. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[17]. Bist, R. B., Regmi, P., Karcher, D., Guo, Y., Singh, A. K., Ritz, C. W., Kim, W. K., Jones, D., & Chai, L. Bedding Management for Suppressing Particulate Matter in Cage-Free Hen Houses. AgriEngineering. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[16]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Automatic Detection of Cage-free Dead Hens with Deep Learning Methods. AgriEngineering. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[15]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Mislaying Behavior Detection in Cage-Free Hen House with Deep Learning Technologies. Poultry Science. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[14]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Effective Strategies for Mitigating Feather Pecking and Cannibalism in Cage-Free W-36 Pullets. Poultry. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[13]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Temporal Variations of Air Quality in Cage-Free Experimental Pullet Houses. Poultry. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[12]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. A Novel Benchmark of YOLOv6 Object Detector for Piling Behavior Detection in Cage-Free Laying Hen Facilities. AgriEngineering. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[11]. Bist, R. B., Subedi, S., Chai, L., Regmi, P., Ritz, C. W., Kim, W. K., & Yang, X. Effects of Perching on Poultry Welfare and Production: A Review. Poultry, 2(2), 134-157. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[10]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Ammonia Emissions, Impacts, and Mitigation Strategies for Poultry Production: A Critical Review. Journal of Environmental Management, 328, 116919. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[9]. Chai, L., Subedi, S., Bist, R. B., & Yang, X. Artificial Intelligence Technologies for Monitoring Poultry Pecking. Journal of the NACAA, 16(1).</li>
+                <li>[8]. Guo, Y., Chai, L., Bist, R. B., Regmi, P., & Yi, D. Automatic Tracking of Lohmann Brown Hens on the Litter Floor of Cage-Free Houses with Deep Learning Methods. Poultry Science. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[7]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Tracking Pecking Behaviors and Damages of Cage-Free Laying Hens with Machine Vision Technologies. Computers and Electronics in Agriculture. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[6]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Tracking Floor Eggs with Machine Vision in Cage-Free Hen Houses. Poultry Science. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[5]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. A Computer Vision Based Automatic System for Egg Grading and Defect Detection. Animal. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[4]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. An Automatic Classifier for Monitoring Applied Behaviors of Cage–Free Laying Hens with Deep Learning. Engineering Applications of Artificial Intelligence. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[3]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. A Deep Learning Method for Monitoring Spatial Distribution of Cage-Free Hens. Artificial Intelligence in Agriculture. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+            </ul>
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">2022</h3>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[2]. Yang, X., Chai, L., Bist, R. B., Subedi, S., & Wu, Z. A Deep Learning Model for Detecting Cage-Free Hens on the Litter Floor. Animals, 12(15), 1983. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[1]. Bist, R. B., & Chai, L. Advanced Strategies for Mitigating Particulate Matter Generations in Poultry Houses. Appl. Sci. 2022, 12(22), 11323 <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+            </ul>
+            <h2 class="text-2xl font-semibold text-blue-800 mb-2 underline-heading">Preprints</h2>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[4]. Bist, R. B., Chai, L., Weimer, S., Atungulu, H., Pennicott, C., Yang, X., Subedi, S., Pallerla, C., Tian, Y., Wang, D. (2025). Efficient Auto-Labeling of Large-Scale Poultry Datasets (ALPD) Using Semi-Supervised Models, Active Learning, and Prompt-then-Detect Approach. ArXiv. <a href="#" class="text-blue-600 hover:underline">Link</a>.</li>
+                <li>[3]. Pallerla, C., Feng, Y., Owens, C. M., Bist, R. B., Mahmoudi, S., Sohrabipour, P., Davar, A., Wang, D. (2024). Neural Network Architecture Search Enabled Wide-Deep Learning (NAS-WD) for Spatially Heterogenous Property Awarded Chicken Woody Breast Classification and Hardness Regression. ArXiv. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[2]. Tian, Y., Kelso, L., Xiao, Y., Pallerla, C., Bist, R. B., Mahmoudi, S., Liu, Z., Xiong, H., Subbiah, J., Howell, T., Wang, D. (2024). Palm-size Wireless Piezoelectric Immune-biosensing System for Rapid E. coli O157:H7. KeAi (SSRN). <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[1]. Yang, X., Dai, H., Wu, Z., Bist, R. B., Subedi, S., Sun, J., & Chai, L. (2023). SAM for Poultry Science. ArXiv. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+            </ul>
+            <h2 class="text-2xl font-semibold text-blue-800 mb-2 underline-heading">Proceedings</h2>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[10]. Bist, R. B., Paneru, B., Yang, X., & Chai, L. (2024). Machine Learning Model for Detection, Segmentation, and Tracking of Individual Cage-free Laying Hens (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[9]. Bist, R. B., Paneru, B., Yang, X., & Chai, L. (2024). Comparative Assessments of Cage-Free Pullet Age, Activities, and Impacts on Dust Concentration Using Accelerometer-Based Activity Sensor (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[8]. Bist, R. B., Paneru, B., Yang, X., & Chai, L. (2024). Automatic Detection and Scoring of Footpad Dermatitis in Laying Hens Using Machine Learning Models (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[7]. Paneru, B., Bist, R. B., Yang, X., & Chai, L. (2024). Using Machine Learning Models to Detect Dustbathing Behavior of Cage-Free Laying Hens Automatically (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[6]. Paneru, B., Bist, R. B., Yang, X., & Chai, L. (2024). Detecting Perching Behavior of Cage-Free Laying Hens with Machine Vision Technologies (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[5]. Yang, X., Bist, R. B., Paneru, B., & Chai, L. (2024). Advanced Machine Learning Techniques for Monitoring Poultry Movement Patterns (Oral Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[4]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. (2023). Effects of Artificial Dusk Lighting on Perching Behaviors of Cage-Free Laying Hens. In 2023 ASABE Annual International Meeting. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[3]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. (2023). Cage-Free Hens' Feather Pecking Management. In 2023 ASABE Annual International Meeting. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[2]. Bist, R. B., Chai, L., Yang, X., Subedi, S., & Guo, Y. (2022). Air Quality in Cage-Free Houses During Pullets Production. In 2022 ASABE Annual International Meeting. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+                <li>[1]. Yang, X., Chai, L., Bist, R. B., Subedi, S., & Guo, Y. (2022). Variation of Litter Quality in Cage-Free Houses During Pullet Production. In 2022 ASABE Annual International Meeting. <a href="#" class="text-blue-600 hover:underline">DOI</a>.</li>
+            </ul>
+            <h2 class="text-2xl font-semibold text-blue-800 mb-2 underline-heading">Abstracts & Presentations</h2>
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">2025</h3>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[51]. Bist, R. B., Pallerla, C., Owens, C. M., Wang, D. Detection and classification of woody breast in poultry using backlighting and vision-based systems (Poster Presentation). ASABE 2025, Toronto, Canada.</li>
+                <li>[50]. Pallerla, C., Bist, R. B., Owens, C. M., Weimer, S., Wang, D. Enhancing foreign material detection in poultry processing plants using thermal imaging and vision-based systems (Oral Presentation). ASABE 2025, Toronto, Canada.</li>
+                <li>[49]. Tagoe, A., Bist, R. B., Koparan, C., Poncet, A., Wang, D., Johnson, D., Worthington, M. Preliminary Analysis of Computer Vision for Blackberry Flower Quantification (Oral Presentation). ASABE 2025, Toronto, Canada.</li>
+                <li>[48]. Bist, R. B., Chai, L., Weimer, S., Pennicott, C., Yang, X., Pallerla, C., Tian, Y., Wang, D. A Semi-Supervised Auto-Labeling Approach to Enhance Artificial Intelligence in Poultry Farming (Oral Presentation). IPSF/IPPE 2025, Atlanta, Georgia, USA.</li>
+                <li>[47]. Paneru, B., Bist, R. B., Chai, L., & Yang, X. Deep Learning Methods for Tracking Activities of Male Birds in Cage-Free Flock. IPSF/IPPE 2025, Atlanta, Georgia, USA.</li>
+                <li>[46]. Paneru, B., Yang, X., Bist, R. B., Dhungana, A., Dahal, S., & Chai, L. Monitoring Perching Behavior of Cage-Free Hens with Deep Learning. (Poster Presentation), US Precision Livestock Farming Conference 2025, Lincoln, Nebraska, USA.</li>
+                <li>[45]. Paneru, B., Yang, X., Bist, R. B., Dhungana, A., Dahal, S., & Chai, L. Monitoring Poultry Dustbathing with Deep Learning Technologies. (Poster Presentation), US Precision Livestock Farming Conference 2025, Lincoln, Nebraska, USA.</li>
+                <li>[44]. Yang, X., Paneru, B., Bist, R. B., Dhungana, A., Dahal, S., & Chai, L. Machine Vision for Monitoring Poultry Locomotion and Activity Index. (Oral Presentation), US Precision Livestock Farming Conference 2025, Lincoln, Nebraska, USA.</li>
+            </ul>
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">2024</h3>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[43]. Bist, R. B., Chai, L., Weimer, S., Pennicott, C., Yang, X., Mahmoudi, S., Pallerla, C., Feng, Y., Davar, A., Sohrabipour, P., Subbiah, J., Wang, D. Automatic Labeling of Large-Scale Poultry Image Datasets Using Inductive Semi-Supervised Auto-Labeling Models. (Poster Presentation). Annual Arkansas ASABE Meeting 2024, Fayetteville, AR.</li>
+                <li>[42]. Saeidifar, S., Li, G., Chai, L., Bist, R. B.. Zero-shot image segmentation for monitoring thermal conditions of individual laying hens. (Oral Presentation), IPSF/ IPPE 2024, Atlanta, GA, USA.</li>
+                <li>[41]. Saeidifar, S., Li, G., Chai, L., Bist, R. B., Rasheed, K. M., Lu, J., Yang, X. Zero-shot image segmentation for monitoring thermal conditions of individual cage-Free laying hens. (Poster Presentation), IPSF/ IPPE 2024, Atlanta, GA, USA.</li>
+                <li>[40]. Saeidifar, S., Li, G., Lu, J., Chai, L., Bist, R. B., Yang, X. Automatic segmentation of birds using a combination of object detection and foundation image segmentation models. International Conference on Artificial Intelligence, Machine Learning, and Big Data Engineering, Istanbul, Turkey.</li>
+                <li>[39]. Saeidifar, S., Li, G., Lu, J., Chai, L., Bist, R. B., Yang, X. Automatic segmentation of birds using a combination of object detection and foundation image segmentation models. Institute of Biological Engineering 2024 Annual Conference, Atlanta, GA.</li>
+                <li>[38]. Feng, Y., Pallerla, C., Sohrabipour, P., Mahmoudi, S., Davar, A., Bist, R. B., & Wang, D. Synthetic Data Augmentation for Chicken Carcass Instance Segmentation with Mask R-CNN. (Poster Presentation). Annual Arkansas ASABE Meeting 2024, Fayetteville, AR.</li>
+                <li>[37]. Tian, Y., Pallerla, C., Kelso, L., Bist, R. B., Liu, Z., Zhou, C., Subbiah, J., Howell, T., & Wang, D. Palm-size wireless piezoelectric immune-sensor system for E. coli detection. (Poster Presentation). Annual Arkansas ASABE Meeting 2024, Fayetteville, AR.</li>
+                <li>[36]. Bist, R. B., Paneru, B., Yang, X., & Chai, L. Automatic Detection and Scoring of Footpad Dermatitis in Laying Hens Using Machine Learning Models. (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA.</li>
+                <li>[35]. Bist, R. B., Paneru, B., Yang, X., & Chai, L. Comparative Assessments of Cage-Free Pullet Age, Activities, and Impacts on Dust Concentration Using Accelerometer-Based Activity Sensor. (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA.</li>
+                <li>[34]. Bist, R. B., Paneru, B., Yang, X., & Chai, L. Automatic Detection and Scoring of Footpad Dermatitis in Laying Hens Using Machine Learning Models. (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA.</li>
+                <li>[33]. Bist, R. B., Subedi, S., Yang, X., Paneru, B., & Chai, L. Machine Learning Model for Detection, Segmentation, and Tracking of Individual Cage-Free Laying Hens. (Poster presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA.</li>
+                <li>[32]. Yang, X., Bist, R. B., Paneru, B., & Chai, L. Advanced Machine Learning Techniques for Monitoring Poultry Movement Patterns. (Oral Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA.</li>
+                <li>[31]. Yang, X., Bist, R. B., Subedi, S., Paneru, B., & Chai, L. Deep learning algorithm for tracking individual chicken for locomotion analysis (Oral presentation), IPSF/ IPPE 2024, Atlanta, Georgia, USA.</li>
+                <li>[30]. Paneru, B., Bist, R. B., Yang, X., & Chai, L. Tracking dustbathing behavior of cage-free laying hen using machine vision technologies (Poster presentation), IPSF/ IPPE 2024, Atlanta, Georgia, USA.</li>
+                <li>[29]. Paneru, B., Bist, R. B., Yang, X., & Chai, L. Using Machine Learning Models to Detect Dustbathing Behavior of Cage-Free Laying Hens Automatically. (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA.</li>
+                <li>[28]. Paneru, B., Bist, R. B., Yang, X., & Chai, L. Detecting Perching Behavior of Cage-Free Laying Hens with Machine Vision Technologies. (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA.</li>
+            </ul>
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">2023</h3>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[27]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Synergistic effect of electrostatic particle ionization and bedding management on particulate matter and ammonia reduction in cage-free hen houses. (Oral presentation), 2023 Poultry Science Association Annual Meeting, Philadelphia, PA, USA.</li>
+                <li>[26]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Detecting cage-free hens bumblefoot with deep learning models. (Poster presentation), 2023 Poultry Science Association Annual Meeting, Philadelphia, PA, USA.</li>
+                <li>[25]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Effects of artificial dusk lighting on perching behaviors of cage-free laying hens. (Poster presentation), ASABE Annual International Meeting 2023, Omaha, Nebraska, USA.</li>
+                <li>[24]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Poultry pecking management: a case study. (Poster presentation), ASABE Annual International Meeting 2023, Omaha, Nebraska, USA.</li>
+                <li>[23]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Monitoring Cage-free Laying Hens on Litter Floor with Machine Vision. (Oral Presentation), US Precision Livestock Farming Conference 2023, Knoxville, Tennessee, USA.</li>
+                <li>[22]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Early Detection of Bumblefoot in Poultry: A Novel Approach to Improve Welfare. (Poster), 2023 International Conference on Integrative Precision Agriculture, Athens, Georgia, USA.</li>
+                <li>[21]. Bist, R. B., Chai, L. Floor egg laying behavior detection in cage-free housing. (Oral Presentation), UGA Poultry Science scientific writing proposal presentation, Athens, Georgia, USA.</li>
+                <li>[20]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. An integrated engineering method for mitigating air pollutant emissions from cage-free hen houses. (Poster), UGA Cleantech Symposium, Athens, Georgia, USA.</li>
+                <li>[19]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Monitoring mislaying behaviors of cage-free hens with deep learning. (Oral Presentation), UGA Poultry Science Seminar, Athens, Georgia, USA.</li>
+                <li>[18]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Monitoring mislaying behaviors of cage-free hens with deep learning. (Poster), IPSF/IPPE, Atlanta, Georgia, USA.</li>
+                <li>[17]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Multiple Behavior Classification of Cage-Free Laying Hens Using Deep Learning. (Oral presentation), 2023 Poultry Science Association Annual Meeting, Philadelphia, PA, USA.</li>
+                <li>[16]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Floor Egg Detection with Machine Vision in Cage-Free Houses. (Oral Presentation), US Precision Livestock Farming Conference 2023, Knoxville, Tennessee, USA.</li>
+                <li>[15]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Multiple Behavior Classification of Cage-free Laying Hens using Deep Learning. (Poster), 2023 International Conference on Integrative Precision Agriculture, Athens, Georgia, USA.</li>
+                <li>[14]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Detecting Floor Eggs with Machine Vision Technologies. (Poster), IPSF/IPPE, Atlanta, Georgia, USA.</li>
+                <li>[13]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. A computer vision-based automatic system for egg grading and defect detection in cage-free facilities. (Oral presentation), 2023 Poultry Science Association Annual Meeting, Philadelphia, PA, USA.</li>
+                <li>[12]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. Monitoring cage-free laying hens on litter floor with machine vision. (Oral Presentation), US Precision Livestock Farming Conference 2023, Knoxville, Tennessee, USA.</li>
+                <li>[11]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. (Poster). A computer vision-based automatic system for egg grading and defect detection. 2023 International Conference on Integrative Precision Agriculture, Athens, Georgia, USA.</li>
+                <li>[10]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. Tracking cage-free laying hens on litter floor with machine vision. (Oral Presentation), IPSF/IPPE, Atlanta, Georgia, USA.</li>
+            </ul>
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">2022</h3>
+            <ul class="list-disc pl-5 text-gray-600 mb-4">
+                <li>[9]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Pecking Behavior and Damages Detection Using Machine Vision Technology (Oral Presentation), PSA Annual Meeting, San Antonio, Texas, USA.</li>
+                <li>[8]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. Monitoring Litter Quality in Cage-Free Facilities with W-36 Pullets (Poster), PSA Annual Meeting, San Antonio, Texas, USA.</li>
+                <li>[7]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. Tracking Cage-Free Laying Hens on Litter Floor with Machine Vision (Oral Presentation), UGA Graduate Research Forum, Athens, Georgia, USA.</li>
+                <li>[6]. Yang, X., Bist, R. B., Subedi, S., & Chai, L. A Deep Learning Model to Detect Cage-Free Laying Hens on the Litter Floor (Oral Presentation), PSA Annual Meeting, San Antonio, Texas, USA.</li>
+                <li>[5]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Preventing Feather Pecking and Cannibalism for W-36 Pullets in Cage-Free Houses (Poster), PSA Annual Meeting, San Antonio, Texas, USA.</li>
+                <li>[4]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Bedding Management for Suppressing Particulate Matter in the Cage-Free Layer House (Poster), UGA Graduate Research Forum, Athens, Georgia, USA.</li>
+                <li>[3]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Effects of Hy-Line W-36 Pullet Age on Air Pollutant Concentration in a Cage-Free Housing System (Oral Presentation), IPSF/IPPE, Atlanta, Georgia, USA.</li>
+                <li>[2]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Bedding Management for Suppressing Particulate Matter in Cage-Free Layer House (Oral Presentation), PSA Annual Meeting, San Antonio, Texas, USA.</li>
+                <li>[1]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Bedding Management for Suppressing Particulate Matter in the Cage-Free Layer House (Poster), ASABE Annual International Meeting, Houston, Texas, USA.</li>
+            </ul>
+        </div>
+
+        <!-- Patents Section -->
+        <div id="patents" class="section-content hidden">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Patents</h1>
+            <p class="text-gray-600 mb-4">Details of our patents will be added here as they are granted.</p>
+            <p class="text-gray-600">Currently, the AIR Lab is pursuing several patent applications related to AI-driven livestock monitoring systems, robotic automation for poultry farming, and non-destructive food quality testing technologies. Please check back for updates or contact us for more information.</p>
+        </div>
+
+        <!-- Projects Section -->
+        <div id="projects" class="section-content hidden">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Projects</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="video-card bg-white p-4 rounded-lg shadow-md">
+                    <video controls class="w-full h-48 rounded-lg">
+                        <source src="path_to_project_video1.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <h3 class="text-xl font-semibold text-blue-800 mt-2">Autonomous Poultry Monitoring Robot</h3>
+                    <p class="text-gray-600">A robotic system for real-time monitoring of poultry health and behavior using AI and computer vision.</p>
+                </div>
+                <div class="video-card bg-white p-4 rounded-lg shadow-md">
+                    <video controls class="w-full h-48 rounded-lg">
+                        <source src="path_to_project_video2.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <h3 class="text-xl font-semibold text-blue-800 mt-2">AI-Based Disease Detection System</h3>
+                    <p class="text-gray-600">An AI-driven system to detect livestock diseases like Avian Influenza using advanced sensors.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Section -->
+        <div id="gallery" class="section-content hidden">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Gallery</h1>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <img src="path_to_image.jpg" alt="Husky UGV 2025" class="w-full h-48 object-cover rounded-lg mb-2">
+                    <p class="text-gray-600 text-center">Husky UGV 2025</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <img src="path_to_image.jpg" alt="SLAM Map 2025" class="w-full h-48 object-cover rounded-lg mb-2">
+                    <p class="text-gray-600 text-center">SLAM Map 2025</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <img src="path_to_image.jpg" alt="Guest Lecture 1 UARK 2025" class="w-full h-48 object-cover rounded-lg mb-2">
+                    <p class="text-gray-600 text-center">Guest Lecture 1 UARK 2025</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Section -->
+        <div id="news" class="section-content hidden">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">News</h1>
+            <div class="space-y-4">
+                <div class="news-item bg-white p-4 rounded-lg shadow-md flex gap-4">
+                    <img src="path_to_news_image1.jpg" alt="News 1 Screenshot" class="w-24 h-24 object-cover rounded-lg">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-800">1. AIR Lab Wins Grant for AI Poultry Monitoring</h3>
+                        <p class="text-gray-600">Read more about our latest funding success. <a href="#" class="text-blue-600 hover:underline">Link</a></p>
+                    </div>
+                </div>
+                <div class="news-item bg-white p-4 rounded-lg shadow-md flex gap-4">
+                    <img src="path_to_news_image2.jpg" alt="News 2 Screenshot" class="w-24 h-24 object-cover rounded-lg">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-800">2. New Publication in Poultry Science</h3>
+                        <p class="text-gray-600">Our latest paper on bumblefoot detection is out! <a href="#" class="text-blue-600 hover:underline">Link</a></p>
+                    </div>
+                </div>
+                <div class="news-item bg-white p-4 rounded-lg shadow-md flex gap-4">
+                    <img src="path_to_news_image3.jpg" alt="News 3 Screenshot" class="w-24 h-24 object-cover rounded-lg">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-800">3. AIR Lab at ASABE 2025</h3>
+                        <p class="text-gray-600">Join us for our presentations in Toronto. <a href="#" class="text-blue-600 hover:underline">Link</a></p>
+                    </div>
+                </div>
+                <div class="news-item bg-white p-4 rounded-lg shadow-md flex gap-4">
+                    <img src="path_to_news_image4.jpg" alt="News 4 Screenshot" class="w-24 h-24 object-cover rounded-lg">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-800">4. Robotics Workshop Hosted by AIR Lab</h3>
+                        <p class="text-gray-600">Details on our upcoming workshop. <a href="#" class="text-blue-600 hover:underline">Link</a></p>
                     </div>
                 </div>
             </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
-
-        <!-- Publications Section -->
-        <section id="publications" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Publications</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse overflow-y-auto max-h-screen">
-                <p class="text-lg mb-6">View our <a href="#" class="text-air-accent hover:underline">Google Scholar page</a>.</p>
-                
-                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Peer-reviewed Articles</h3>
-                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2025</h4>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[38]. Subedi, S., Bist, R. B., Yang, X., Li, G., & Chai, L. Advanced Deep Learning Methods for Multiple Behavior Classification of Cage-Free Laying Hens. <i>AgriEngineering</i>, 7(2). <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
-                    <li class="pub-item">[37]. Yang, X., Bist, R. B., Subedi, S., Guo, Y., & Chai, L. The Application of Probiotics and Prebiotics in Poultry Production and Impacts on Environment: A Review. <i>Encyclopedia</i> 2025, 5(1). <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
-                    <li class="pub-item">[36]. Yang, X., Zhang, Z., Paneru, B., Lin, J., Bist, R. B., Lu, G., & Chai, L. Monitoring Dead Chickens and Floor Eggs with Robotic Technologies. <i>AgriEngineering</i>, 7(2), 35. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
-                </ul>
-                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2024</h4>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[35]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Advanced Deep Learning Methods for Multiple Behavior Classification of Cage-free Laying Hens. <i>AgriEngineering</i>. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
-                    <li class="pub-item">[34]. Bist, R. B., Yang, X., Subedi, S., Bist, K., Paneru, B., Li, G., & Chai, L. An automatic method for scoring poultry footpad dermatitis with deep learning and thermal imaging. <i>Computers and Electronics in Agriculture</i>. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
-                    <!-- Add remaining 2024 publications -->
-                </ul>
-                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2023</h4>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[18]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Illuminating solutions to reduce mislaid eggs in cage-free layers. <i>AgriEngineering</i>, 5(4), 2170-2183. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
-                    <!-- Add remaining 2023 publications -->
-                </ul>
-                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2022</h4>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[2]. Yang, X., Chai, L., Bist, R. B., Subedi, S., & Wu, Z. A Deep Learning Model for Detecting Cage-Free Hens on the Litter Floor. <i>Animals</i>, 12(15), 1983. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
-                    <li class="pub-item">[1]. Bist, R. B., & Chai, L. Advanced Strategies for Mitigating Particulate Matter Generations in Poultry Houses. <i>Appl. Sci.</i> 2022, 12(22), 11323. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
-                </ul>
-
-                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Preprints</h3>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[4]. Bist, R. B., Chai, L., Weimer, S., Atungulu, H., Pennicott, C., Yang, X., Subedi, S., Pallerla, C., Tian, Y., Wang, D. (2025). Efficient Auto-Labeling of Large-Scale Poultry Datasets (ALPD) Using Semi-Supervised Models, Active Learning, and Prompt-then-Detect Approach. <i>ArXiv</i>. <a href="#" class="text-air-accent hover:underline">Link</a>.</li>
-                    <!-- Add remaining preprints -->
-                </ul>
-
-                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Proceedings</h3>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[10]. Bist, R. B., Paneru, B., Yang, X., & Chai, L. (2024). Machine Learning Model for Detection, Segmentation, and Tracking of Individual Cage-free Laying Hens (Poster Presentation), ASABE Annual International Meeting 2024, Anaheim, CA, USA. <a href="#" class="text-air-accent hover:underline">DOI</a>.</li>
-                    <!-- Add remaining proceedings -->
-                </ul>
-
-                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6">Abstracts & Presentations</h3>
-                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2025</h4>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[51]. Bist, R. B., Pallerla, C., Owens, C. M., Wang, D. Detection and classification of woody breast in poultry using backlighting and vision-based systems (Poster Presentation). ASABE 2025, Toronto, Canada.</li>
-                    <!-- Add remaining 2025 abstracts -->
-                </ul>
-                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2024</h4>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[43]. Bist, R. B., Chai, L., Weimer, S., Pennicott, C., Yang, X., Mahmoudi, S., Pallerla, C., Feng, Y., Davar, A., Sohrabipour, P., Subbiah, J., Wang, D. Automatic Labeling of Large-Scale Poultry Image Datasets Using Inductive Semi-Supervised Auto-Labeling Models. (Poster Presentation). Annual Arkansas ASABE Meeting 2024, Fayetteville, AR.</li>
-                    <!-- Add remaining 2024 abstracts -->
-                </ul>
-                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2023</h4>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[27]. Bist, R. B., Subedi, S., Chai, L., & Yang, X. Synergistic effect of electrostatic particle ionization and bedding management on particulate matter and ammonia reduction in cage-free hen houses. (Oral presentation), 2023 Poultry Science Association Annual Meeting, Philadelphia, PA, USA.</li>
-                    <!-- Add remaining 2023 abstracts -->
-                </ul>
-                <h4 class="text-2xl font-exo font-semibold text-air-blue mb-4">2022</h4>
-                <ul class="list-disc pl-6 text-lg mb-12">
-                    <li class="pub-item">[9]. Subedi, S., Bist, R. B., Yang, X., & Chai, L. Pecking Behavior and Damages Detection Using Machine Vision Technology (Oral Presentation), PSA Annual Meeting, San Antonio, Texas, USA.</li>
-                    <!-- Add remaining 2022 abstracts -->
-                </ul>
-            </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
-
-        <!-- Patents Section -->
-        <section id="patents" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Patents</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
-                <p class="text-lg mb-12">No patents are currently listed. Check back for updates on our innovative technologies in AI and robotics for precision livestock farming.</p>
-            </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
-
-        <!-- Projects Section -->
-        <section id="projects" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Projects</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
-                <p class="text-lg mb-12">Videos and detailed descriptions of our projects will be added here.</p>
-            </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
-
-        <!-- Gallery Section -->
-        <section id="gallery" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Gallery</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-12">
-                    <div class="hover:scale-105 transition-transform"><img src="path_to_image.jpg" alt="Husky UGV 2025" class="w-full h-48 object-cover rounded"><p class="text-center mt-2 text-air-blue">Husky UGV 2025</p></div>
-                    <div class="hover:scale-105 transition-transform"><img src="path_to_image.jpg" alt="SLAM Map 2025" class="w-full h-48 object-cover rounded"><p class="text-center mt-2 text-air-blue">SLAM Map 2025</p></div>
-                    <!-- Add remaining gallery items -->
-                </div>
-            </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
-
-        <!-- News Section -->
-        <section id="news" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">News</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
-                <p class="text-lg mb-12">Stay tuned for the latest updates and achievements from the AIR Lab.</p>
-            </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
+        </div>
 
         <!-- Acknowledgements Section -->
-        <section id="acknowledgements" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Acknowledgements</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
-                <p class="text-lg mb-12">This website showcases research contributions developed during my time at the University of Georgia and the University of Arkansas. We sincerely appreciate the generous support provided by our sponsors.</p>
+        <div id="acknowledgements" class="section-content hidden">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Acknowledgements</h1>
+            <p class="text-gray-600 mb-4">This website showcases research contributions developed during my time at the University of Georgia and the University of Arkansas. In addition, we sincerely appreciate the generous support provided by our sponsors.</p>
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <img src="path_to_sponsor_image.jpg" alt="Sponsor Logos" class="w-64 mx-auto rounded-lg mb-4">
+                <p class="text-gray-600">[Sponsor Details Placeholder]</p>
             </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
+        </div>
 
         <!-- Positions Section -->
-        <section id="positions" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Available Positions</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse">
-                <p class="text-lg mb-6">We seek highly motivated Master's, Ph.D. students, and postdoctoral researchers to join our team starting Fall 2025 to Fall 2028 in the Department of Biological and Agricultural Engineering. Students will conduct research in artificial intelligence, robotics, machine vision, infectious disease modeling, and automation for precision livestock farming. Candidates with strong backgrounds in AI, robotics, computational biology, engineering, or related fields are encouraged to apply. Experience in programming, machine learning, computer vision, or mathematical modeling is preferred. Ph.D. positions are fully funded, including stipend, tuition, health insurance, and travel support. Postdoctoral positions offer a competitive salary plus benefits.</p>
-                <p class="text-lg mb-6">Interested candidates should email <a href="mailto:rameshba.bist@gmail.com" class="text-air-accent hover:underline">rameshba.bist@gmail.com</a> with their CV and research statement.</p>
-                <embed src="path_to_position_post.pdf" type="application/pdf" class="w-full h-96 rounded mb-12">
+        <div id="positions" class="section-content hidden">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Available Positions</h1>
+            <p class="text-gray-600 mb-4">We seek highly motivated Master's, Ph.D. students, and postdoctoral researchers to join our team starting Fall 2025 to Fall 2028 in the Department of Biological and Agricultural Engineering. The students will be expected to conduct research within the field of artificial intelligence, robotics, machine vision, infectious disease modeling, and automation for precision livestock farming. Students with strong backgrounds in AI, robotics, computational biology, engineering, or related fields are encouraged to apply. Experience in programming, machine learning, computer vision, or mathematical modeling is preferred. Ph.D. positions will be fully funded, including stipend, tuition, health insurance, and travel support. Postdoctoral positions offer a competitive salary plus benefits.</p>
+            <p class="text-gray-600 mb-4">We encourage highly motivated individuals to apply and join our innovative research team. If you are interested in the position, please email <a href="mailto:rameshba.bist@gmail.com" class="text-blue-600 hover:underline">rameshba.bist@gmail.com</a> with their CV and research statement.</p>
+            <div class="pdf-card bg-white p-4 rounded-lg shadow-md text-center">
+                <a href="path_to_positions_pdf.pdf" target="_blank">
+                    <img src="path_to_pdf_thumbnail.jpg" alt="Positions PDF" class="w-48 mx-auto rounded-lg mb-2">
+                    <p class="text-gray-600">View Detailed Position Descriptions (PDF)</p>
+                </a>
             </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
+        </div>
 
         <!-- Contact Section -->
-        <section id="contact" class="section hidden">
-            <h2 class="text-5xl font-exo font-bold text-air-blue text-center underline underline-offset-8 mb-8">Contact</h2>
-            <div class="bg-air-light p-8 rounded-lg shadow-md animate-glow-pulse text-center">
-                <h3 class="text-3xl font-exo font-semibold text-air-blue mb-6 animate-slide-in contact-item">📬 Let's Get In Touch!</h3>
-                <p class="text-lg mb-6 animate-slide-in contact-item">Feel free to reach out if you're interested in collaboration, research, or just want to connect. We’d love to hear from you!</p>
-                <p class="text-xl font-exo font-semibold text-air-blue mb-2 animate-slide-in contact-item">Ramesh Bahadur Bist, Ph.D.</p>
-                <p class="text-lg mb-2 animate-slide-in contact-item">Assistant Professor of Artificial Intelligence for Integrated Food and Animal Systems</p>
-                <p class="text-lg mb-2 animate-slide-in contact-item">Principal Investigator of Artificial Intelligence and Robotics (AIR) Lab</p>
-                <p class="text-lg mb-2 animate-slide-in contact-item">151 Weaver Labs, Department of Biological and Agricultural Engineering</p>
-                <p class="text-lg mb-2 animate-slide-in contact-item">North Carolina State University, Raleigh, NC 27606</p>
-                <p class="text-lg mb-6 animate-slide-in contact-item">Email: <a href="mailto:rameshba.bist@gmail.com" class="text-air-accent hover:underline">rameshba.bist@gmail.com</a></p>
-                <div class="flex justify-center gap-6 animate-slide-in contact-item">
-                    <a href="#" class="text-air-accent hover:underline flex items-center"><img src="path_to_twitter_icon.png" alt="Twitter" class="w-6 h-6 mr-2">Twitter</a>
-                    <a href="#" class="text-air-accent hover:underline flex items-center"><img src="path_to_linkedin_icon.png" alt="LinkedIn" class="w-6 h-6 mr-2">LinkedIn</a>
-                    <a href="#" class="text-air-accent hover:underline flex items-center"><img src="path_to_scholar_icon.png" alt="Google Scholar" class="w-6 h-6 mr-2">Google Scholar</a>
-                    <a href="#" class="text-air-accent hover:underline flex items-center"><img src="path_to_github_icon.png" alt="GitHub" class="w-6 h-6 mr-2">GitHub</a>
+        <div id="contact" class="section-content hidden text-center">
+            <h1 class="text-3xl font-bold text-blue-900 mb-4 underline-heading">Contact</h1>
+            <p class="text-2xl font-semibold text-gray-600 mb-4 pop-text">📬 Let's Get In Touch!</p>
+            <p class="text-lg text-gray-600 mb-4">Feel free to reach out for collaboration, research, or to connect. We’d love to hear from you!</p>
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-xl mx-auto">
+                <h2 class="text-2xl font-semibold text-blue-800 mb-4">Ramesh Bahadur Bist, Ph.D.</h2>
+                <p class="text-base text-gray-600 mb-2 contact-item">Assistant Professor of AI for Integrated Food and Animal Systems</p>
+                <p class="text-base text-gray-600 mb-2 contact-item">Principal Investigator, AIR Lab</p>
+                <p class="text-base text-gray-600 mb-2 contact-item">151 Weaver Labs, Dept. of Biological and Agricultural Engineering</p>
+                <p class="text-base text-gray-600 mb-2 contact-item">NC State University, Raleigh, NC 27606</p>
+                <p class="text-base text-gray-600 mb-4 contact-item">Email: <a href="mailto:rameshba.bist@gmail.com" class="text-blue-600 hover:underline">rameshba.bist@gmail.com</a></p>
+                <div class="flex justify-center space-x-3 flex-wrap gap-y-2">
+                    <a href="#" class="text-blue-600 hover:underline text-base">Twitter</a>
+                    <a href="#" class="text-blue-600 hover:underline text-base">LinkedIn</a>
+                    <a href="#" class="text-blue-600 hover:underline text-base">Google Scholar</a>
+                    <a href="#" class="text-blue-600 hover:underline text-base">ResearchGate</a>
                 </div>
             </div>
-            <div class="text-center mt-12 text-sm text-gray-600">
-                <p>Page built and maintained by Ramesh Bahadur Bist</p>
-                <p>Website design custom-built using Tailwind CSS, inspired by open-source web layouts</p>
-                <p>© 2025 by Ramesh Bahadur Bist</p>
-            </div>
-        </section>
-    </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white text-center p-4">
+        <div class="flex flex-col items-center space-y-2">
+            <p>Page built and maintained by Ramesh Bahadur Bist</p>
+            <p>Website design custom-built using Tailwind CSS</p>
+            <p>inspired by open-source web layouts</p>
+            <p>© 2025 by Ramesh Bahadur Bist</p>
+        </div>
+    </footer>
 
     <script>
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            document.getElementById(sectionId).classList.remove('hidden');
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('bg-air-accent', 'text-air-dark');
-            });
-            document.querySelector(`button[onclick="showSection('${sectionId}')"]`).classList.add('bg-air-accent', 'text-air-dark');
-        }
+        // JavaScript for handling section navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
 
-        // Show Welcome section by default
-        showSection('welcome');
+            // Show Welcome section by default
+            document.getElementById('welcome').classList.remove('hidden');
+
+            // Handle main navigation clicks
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = item.getAttribute('data-section');
+
+                    // Hide all sections
+                    sections.forEach(section => section.classList.add('hidden'));
+
+                    // Show selected section
+                    document.getElementById(sectionId).classList.remove('hidden');
+
+                    // Update active nav item
+                    navItems.forEach(nav => nav.classList.remove('active-nav'));
+                    item.classList.add('active-nav');
+
+                    // Scroll to top to ensure content is visible under fixed navbar
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+        });
     </script>
 </body>
 </html>
